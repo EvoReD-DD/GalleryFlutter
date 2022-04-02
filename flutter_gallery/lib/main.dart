@@ -30,17 +30,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<GalleryItem> galleryData;
+  //late Future<List<GalleryItem>> galleryData;
   List<GalleryItem> _galleryItemsInState = [];
 
   @override
   void initState() {
     super.initState();
 
-    galleryData = getGalleryData();
-    // getGalleryData().then((galleryItems) => setState(() {
-    //       _galleryItemsInState = galleryItems;
-    //     }));
+    //galleryData = getGalleryData();
+
+    getGalleryData().then((galleryItems) => setState(() {
+          _galleryItemsInState = galleryItems;
+        }));
   }
 
   @override
@@ -48,11 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(title: Text(widget.title)),
         body: FutureBuilder<GalleryItem>(
-            //future: galleryList,
+            //future: galleryData,
             builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
-                itemCount: 10, //_galleryItemsInState.length,
+                itemCount: _galleryItemsInState.length,
                 itemBuilder: (context, index) {
                   return Card(
                     child: ListTile(

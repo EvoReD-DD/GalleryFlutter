@@ -212,7 +212,7 @@ class GalleryItem {
   }
 }
 
-Future<GalleryItem> getGalleryData() async {
+Future<List<GalleryItem>> getGalleryData() async {
   const url =
       'https://api.unsplash.com/photos/?client_id=ab3411e4ac868c2646c0ed488dfd919ef612b04c264f3374c97fff98ed253dc9';
   final response = await http.get(Uri.parse(url));
@@ -220,14 +220,14 @@ Future<GalleryItem> getGalleryData() async {
 
   if (response.statusCode == 200) {
     if (data is List<dynamic>) {
-      final parsedData = data
+      return data
           .map((item) =>
               item is Map<String, dynamic> ? GalleryItem.fromJson(item) : null)
           .whereType<GalleryItem>()
           .toList();
     }
-    return data;
   } else {
     throw Exception('Error: ${response.reasonPhrase}');
   }
+  return [];
 }
