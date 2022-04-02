@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gallery/models/gallery_model.dart';
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -29,41 +30,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<GalleryList> galleryList;
+  late Future<GalleryItem> galleryData;
+  List<GalleryItem> _galleryItemsInState = [];
 
   @override
   void initState() {
     super.initState();
-    galleryList = getGalleryList();
+
+    galleryData = getGalleryData();
+    // getGalleryData().then((galleryItems) => setState(() {
+    //       _galleryItemsInState = galleryItems;
+    //     }));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text(widget.title)),
-        body: FutureBuilder<GalleryList>(
-            future: galleryList,
+        body: FutureBuilder<GalleryItem>(
+            //future: galleryList,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    itemCount: snapshot.data!.gallery_items.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: ListTile(
-                          title: Text(
-                              '${snapshot.data!.gallery_items[index].data}'),
-                          leading: Image.network(
-                              '${snapshot.data!.gallery_items[index].image}'),
-                          isThreeLine: true,
-                        ),
-                      );
-                    });
-              } else if (snapshot.hasError) {
-                return Text('error');
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }));
+          if (snapshot.hasData) {
+            return ListView.builder(
+                itemCount: 10, //_galleryItemsInState.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text('${snapshot.data!.date}'),
+                      leading: Image.network('${snapshot.data!.image}'),
+                      isThreeLine: true,
+                    ),
+                  );
+                });
+          } else if (snapshot.hasError) {
+            return Text('error');
+          }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }));
   }
 }

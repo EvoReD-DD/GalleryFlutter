@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class GalleryList {
-  GalleryList({
+class GalleryInfo {
+  GalleryInfo({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -199,29 +199,34 @@ class Urls {
   String? smallS3;
 }
 
-class Gallery {
-  String? data;
+class GalleryItem {
+  String? date;
   String? image;
-  Gallery({this.data, this.image});
+  GalleryItem({this.date, this.image});
 
-  factory Gallery.fromJson(Map<String, dynamic> json) {
-    return Gallery(
-      image: json['full'],
-      data: json['created_at'],
+  factory GalleryItem.fromJson(Map<String, dynamic> json) {
+    return GalleryItem(
+      image: json['urls']['full'],
+      date: json['created_at'],
     );
   }
 }
 
-Future<GalleryList> getGalleryList() async {
+Future<GalleryItem> getGalleryData() async {
   const url =
       'https://api.unsplash.com/photos/?client_id=ab3411e4ac868c2646c0ed488dfd919ef612b04c264f3374c97fff98ed253dc9';
   final response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    GalleryList template = GalleryList.fromJson(data[0]);
+  final data = jsonDecode(response.body);
 
-    return template;
-    return GalleryList.fromJson(json.decode(response.body));
+  if (response.statusCode == 200) {
+    if (data is List<dynamic>) {
+      final parsedData = data
+          .map((item) =>
+              item is Map<String, dynamic> ? GalleryItem.fromJson(item) : null)
+          .whereType<GalleryItem>()
+          .toList();
+    }
+    return data;
   } else {
     throw Exception('Error: ${response.reasonPhrase}');
   }
