@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gallery/models/gallery_model.dart';
-import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -30,14 +29,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //late Future<List<GalleryItem>> galleryData;
   List<GalleryItem> _galleryItemsInState = [];
 
   @override
   void initState() {
     super.initState();
-
-    //galleryData = getGalleryData();
 
     getGalleryData().then((galleryItems) => setState(() {
           _galleryItemsInState = galleryItems;
@@ -48,27 +44,40 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text(widget.title)),
-        body: FutureBuilder<GalleryItem>(
-            //future: galleryData,
-            builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-                itemCount: _galleryItemsInState.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text('${snapshot.data!.date}'),
-                      leading: Image.network('${snapshot.data!.image}'),
-                      isThreeLine: true,
-                    ),
-                  );
-                });
-          } else if (snapshot.hasError) {
-            return Text('error');
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }));
+        body: ListView.builder(
+            itemCount: _galleryItemsInState.length,
+            itemBuilder: (context, index) {
+              return Card(
+                  child: TextButton(
+                onPressed: () {
+                  String image = _galleryItemsInState[index].imageFull;
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ScreenPhoto(
+                            fullPhoto: image,
+                          )));
+                },
+                child: ListTile(
+                  title: Text('${_galleryItemsInState[index].date}'),
+                  leading: Image.network(
+                      '${_galleryItemsInState[index].imageThumb}'),
+                ),
+              ));
+            }));
+  }
+  // return Center(
+  //   child: CircularProgressIndicator(),
+}
+
+class ScreenPhoto extends StatelessWidget {
+  final String fullPhoto;
+  ScreenPhoto({required this.fullPhoto});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Photo')),
+      body: Center(
+        child: Image.network(fullPhoto),
+      ),
+    );
   }
 }

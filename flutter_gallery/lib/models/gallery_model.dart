@@ -201,13 +201,15 @@ class Urls {
 
 class GalleryItem {
   String? date;
-  String? image;
-  GalleryItem({this.date, this.image});
+  String? imageThumb;
+  String imageFull;
+  GalleryItem({this.date, this.imageThumb, required this.imageFull});
 
   factory GalleryItem.fromJson(Map<String, dynamic> json) {
     return GalleryItem(
-      image: json['urls']['full'],
+      imageThumb: json['urls']['thumb'],
       date: json['created_at'],
+      imageFull: json['urls']['full'],
     );
   }
 }
