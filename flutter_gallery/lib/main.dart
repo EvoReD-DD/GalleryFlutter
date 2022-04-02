@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_gallery/models/gallery_model.dart';
 
 void main() {
@@ -43,40 +44,62 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+        ),
         body: ListView.builder(
             itemCount: _galleryItemsInState.length,
             itemBuilder: (context, index) {
               return Card(
-                  child: TextButton(
-                onPressed: () {
-                  String image = _galleryItemsInState[index].imageFull;
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ScreenPhoto(
-                            fullPhoto: image,
-                          )));
-                },
-                child: ListTile(
-                  title: Text('${_galleryItemsInState[index].date}'),
-                  leading: Image.network(
-                      '${_galleryItemsInState[index].imageThumb}'),
+                child: TextButton(
+                  onPressed: () {
+                    String image = _galleryItemsInState[index].imageFull;
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ScreenPhoto(
+                              fullPhoto: image,
+                            )));
+                  },
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${_galleryItemsInState[index].date}',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Image.network(
+                        '${_galleryItemsInState[index].imageThumb}',
+                        width: 100,
+                        height: 100,
+                        alignment: Alignment.center,
+                      ),
+                    ],
+                  ),
                 ),
-              ));
+              );
             }));
   }
-  // return Center(
-  //   child: CircularProgressIndicator(),
 }
 
 class ScreenPhoto extends StatelessWidget {
   final String fullPhoto;
   ScreenPhoto({required this.fullPhoto});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Photo')),
       body: Center(
-        child: Image.network(fullPhoto),
+        child: Image.network(
+          fullPhoto,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }
